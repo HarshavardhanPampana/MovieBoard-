@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MovieBoard — Discover Films Worth Watching</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Cinematic Background -->
+  <div class="cinema-bg">
+    <div class="spotlight spotlight-1"></div>
+    <div class="spotlight spotlight-2"></div>
+    <div class="spotlight spotlight-3"></div>
+    <div class="film-grain"></div>
+    <div class="stars" id="stars"></div>
+  </div>
+
+  <!-- Floating Film Reels -->
+  <div class="floating-elements">
+    <span class="float-emoji" style="top:8%;left:5%;animation-delay:0s;">🎬</span>
+    <span class="float-emoji" style="top:15%;right:8%;animation-delay:1.5s;">🍿</span>
+    <span class="float-emoji" style="top:45%;left:3%;animation-delay:3s;">🎭</span>
+    <span class="float-emoji" style="bottom:20%;right:4%;animation-delay:2s;">⭐</span>
+    <span class="float-emoji" style="bottom:35%;left:7%;animation-delay:4s;">🎥</span>
+    <span class="float-emoji" style="top:60%;right:6%;animation-delay:1s;">🎞️</span>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">
+        <div class="brand-logo">M</div>
+        <div class="brand-name">
+          <span class="brand-main">MovieBoard</span>
+          <span class="brand-tag">community picks</span>
+        </div>
+      </a>
+      <div class="nav-actions">
+        <div class="search-bar" id="search-bar">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-input" placeholder="Search movies..." autocomplete="off">
+        </div>
+        <a href="submit.html" class="btn-neon">
+          <span class="btn-neon-text">+ Recommend</span>
+          <span class="btn-neon-glow"></span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="hero-badge">🔥 Trending Now</div>
+    <h1 class="hero-title">
+      <span class="hero-line-1">What Should You</span>
+      <span class="hero-line-2">Watch Tonight<span class="cursor-blink">?</span></span>
+    </h1>
+    <p class="hero-sub">Real people. Real opinions. No algorithms. Just movies worth your time.</p>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-num" id="stat-movies">0</span>
+        <span class="stat-label">Recommendations</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-num" id="stat-votes">0</span>
+        <span class="stat-label">Total Votes</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-num" id="stat-genres">9</span>
+        <span class="stat-label">Genres</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Genre Chips (scrollable) -->
+  <div class="genre-strip">
+    <button class="genre-chip active" data-genre="All">🎬 All</button>
+    <button class="genre-chip" data-genre="Action">💥 Action</button>
+    <button class="genre-chip" data-genre="Comedy">😂 Comedy</button>
+    <button class="genre-chip" data-genre="Drama">🎭 Drama</button>
+    <button class="genre-chip" data-genre="Horror">👻 Horror</button>
+    <button class="genre-chip" data-genre="Sci-Fi">🚀 Sci-Fi</button>
+    <button class="genre-chip" data-genre="Thriller">🔪 Thriller</button>
+    <button class="genre-chip" data-genre="Romance">💕 Romance</button>
+    <button class="genre-chip" data-genre="Documentary">📽️ Documentary</button>
+    <button class="genre-chip" data-genre="Animation">🎨 Animation</button>
+  </div>
+
+  <!-- Sort Bar -->
+  <div class="sort-bar">
+    <div class="sort-tabs">
+      <button class="sort-tab active" data-sort="new">🕐 Latest</button>
+      <button class="sort-tab" data-sort="top">👑 Top Rated</button>
+    </div>
+    <span class="movie-count" id="movie-count"></span>
+  </div>
+
+  <!-- Skeleton Loading -->
+  <div id="skeleton-loading" class="card-grid">
+    <div class="skeleton-card"><div class="sk-rank"></div><div class="sk-badge"></div><div class="sk-title"></div><div class="sk-text"></div><div class="sk-text short"></div><div class="sk-footer"></div></div>
+    <div class="skeleton-card"><div class="sk-rank"></div><div class="sk-badge"></div><div class="sk-title"></div><div class="sk-text"></div><div class="sk-text short"></div><div class="sk-footer"></div></div>
+    <div class="skeleton-card"><div class="sk-rank"></div><div class="sk-badge"></div><div class="sk-title"></div><div class="sk-text"></div><div class="sk-text short"></div><div class="sk-footer"></div></div>
+    <div class="skeleton-card"><div class="sk-rank"></div><div class="sk-badge"></div><div class="sk-title"></div><div class="sk-text"></div><div class="sk-text short"></div><div class="sk-footer"></div></div>
+    <div class="skeleton-card"><div class="sk-rank"></div><div class="sk-badge"></div><div class="sk-title"></div><div class="sk-text"></div><div class="sk-text short"></div><div class="sk-footer"></div></div>
+    <div class="skeleton-card"><div class="sk-rank"></div><div class="sk-badge"></div><div class="sk-title"></div><div class="sk-text"></div><div class="sk-text short"></div><div class="sk-footer"></div></div>
+  </div>
+
+  <!-- Empty State -->
+  <div id="empty-state" class="empty-state" style="display:none;">
+    <div class="empty-visual">🍿</div>
+    <h2>The theater is empty</h2>
+    <p>Be the first to recommend something amazing</p>
+    <a href="submit.html" class="btn-neon"><span class="btn-neon-text">+ Add a Movie</span><span class="btn-neon-glow"></span></a>
+  </div>
+
+  <!-- Error State -->
+  <div id="error-state" class="error-state" style="display:none;">
+    <div class="empty-visual">📡</div>
+    <h2>Connection lost</h2>
+    <p>Could not reach the server</p>
+    <button class="btn-neon" onclick="fetchMovies()"><span class="btn-neon-text">Try Again</span><span class="btn-neon-glow"></span></button>
+  </div>
+
+  <!-- Movie Cards -->
+  <div id="movies-container" class="card-grid"></div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"><span id="toast-icon"></span><span id="toast-msg"></span></div>
+
+  <!-- Confetti -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <script src="script.js"></script>
+</body>
+</html>

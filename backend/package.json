@@ -1,0 +1,15 @@
+{
+  "name": "movie-recommendation-board",
+  "version": "1.0.0",
+  "description": "Community-driven movie recommendation web app on AWS",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "aws-sdk": "^2.1500.0",
+    "uuid": "^9.0.0",
+    "cors": "^2.8.5"
+  }
+}

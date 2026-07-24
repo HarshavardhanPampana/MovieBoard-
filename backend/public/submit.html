@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recommend a Movie — MovieBoard</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Cinematic Background -->
+  <div class="cinema-bg">
+    <div class="spotlight spotlight-1"></div>
+    <div class="spotlight spotlight-2"></div>
+    <div class="film-grain"></div>
+    <div class="stars" id="stars"></div>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">
+        <div class="brand-logo">M</div>
+        <div class="brand-name">
+          <span class="brand-main">MovieBoard</span>
+          <span class="brand-tag">community picks</span>
+        </div>
+      </a>
+      <a href="index.html" class="btn-glass">← Back to Feed</a>
+    </div>
+  </nav>
+
+  <!-- Form -->
+  <div class="submit-wrapper">
+    <div class="submit-card animate-up">
+
+      <!-- Ticket Style Header -->
+      <div class="ticket-header">
+        <div class="ticket-holes"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        <div class="ticket-title">
+          <span class="ticket-icon">🎬</span>
+          <div>
+            <h1>Recommend a Movie</h1>
+            <p>Your pick could be someone's next favorite</p>
+          </div>
+        </div>
+      </div>
+
+      <form id="submit-form">
+
+        <div class="field">
+          <label for="title">🎥 Title</label>
+          <input type="text" id="title" placeholder="What should we watch?" autocomplete="off" required maxlength="100">
+          <div class="field-line"></div>
+          <div class="field-meta">
+            <span class="error-msg" id="title-error"></span>
+            <span class="char-count" id="title-count">0/100</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="genre">🏷️ Genre</label>
+          <div class="genre-picker" id="genre-picker">
+            <button type="button" class="gpick" data-value="Action">💥 Action</button>
+            <button type="button" class="gpick" data-value="Comedy">😂 Comedy</button>
+            <button type="button" class="gpick" data-value="Drama">🎭 Drama</button>
+            <button type="button" class="gpick" data-value="Horror">👻 Horror</button>
+            <button type="button" class="gpick" data-value="Sci-Fi">🚀 Sci-Fi</button>
+            <button type="button" class="gpick" data-value="Thriller">🔪 Thriller</button>
+            <button type="button" class="gpick" data-value="Romance">💕 Romance</button>
+            <button type="button" class="gpick" data-value="Documentary">📽️ Doc</button>
+            <button type="button" class="gpick" data-value="Animation">🎨 Animation</button>
+          </div>
+          <input type="hidden" id="genre" required>
+          <span class="error-msg" id="genre-error"></span>
+        </div>
+
+        <div class="field">
+          <label for="pitch">✍️ Your Pitch</label>
+          <textarea id="pitch" rows="4" placeholder="Sell it in 1-3 sentences. Why should someone watch this?" required maxlength="300"></textarea>
+          <div class="field-line"></div>
+          <div class="field-meta">
+            <span class="error-msg" id="pitch-error"></span>
+            <span class="char-count" id="pitch-count">0/300</span>
+          </div>
+        </div>
+
+        <!-- Live Preview -->
+        <div class="preview-wrap" id="preview-wrap" style="display:none;">
+          <div class="preview-label">👁️ Preview</div>
+          <div class="preview-card">
+            <span class="genre-badge" id="preview-genre"></span>
+            <div class="preview-title" id="preview-title">Title</div>
+            <div class="preview-pitch" id="preview-pitch">Pitch</div>
+            <div class="preview-footer">
+              <span>▲ 0</span><span>▼ 0</span>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" id="submit-btn" class="btn-submit">
+          <span class="btn-text" id="btn-text">🚀 Submit to the Board</span>
+          <span class="btn-loader" id="btn-loader" style="display:none;">
+            <span class="spinner"></span> Submitting...
+          </span>
+        </button>
+
+        <div id="form-message" class="form-message"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Success Overlay -->
+  <div id="success-overlay" class="success-overlay" style="display:none;">
+    <div class="success-content">
+      <div class="success-emoji">🎉</div>
+      <h2>Added to the Board!</h2>
+      <p>Your recommendation is live</p>
+      <div class="success-redirect">Redirecting in <span id="countdown">3</span>s...</div>
+    </div>
+  </div>
+
+  <canvas id="confetti-canvas"></canvas>
+
+  <script src="submit.js"></script>
+</body>
+</html>
