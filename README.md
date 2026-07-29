@@ -14,6 +14,8 @@ MovieBoard/
 │   ├── server.js          # Express server (frontend + API)
 │   ├── package.json       # Dependencies
 │   ├── .env.example       # Template for required environment variables
+│   ├── test/
+│   │   └── server.test.js # Unit tests (Node's built-in test runner)
 │   └── public/            # Static frontend files
 │       ├── index.html     # Feed page (browse + vote)
 │       ├── submit.html    # Submit recommendation page
@@ -64,6 +66,15 @@ pm2 save
 set to) on each instance, with the health check path set to `/health`
 instead of `/` — that endpoint actually verifies DynamoDB connectivity,
 not just that the Node process is alive.
+
+## Tests
+```bash
+npm test
+```
+Runs unit tests (`test/server.test.js`) with Node's built-in test
+runner — no extra dependencies required. Covers poster URL validation,
+genre validation, cookie signing/verification, the vote rate limiter,
+and the client-facing movie data transform. Requires Node 18+.
 
 ## API Endpoints
 - GET    /api/movies          — Fetch all movies (?genre=&sort=top|new); search is client-side only

@@ -134,6 +134,24 @@ function isValidPosterUrl(url) {
     && POSTER_URL_PATTERN.test(url);
 }
 
+// Validates a submitted genres array: must be an array, 1-3 unique
+// entries after trimming/deduping, each one a recognized genre.
+// Pulled out as its own function (mirroring isValidPosterUrl) so it
+// can be unit tested without going through the whole POST handler.
+function validateGenres(genres) {
+  if (!Array.isArray(genres)) {
+    return { valid: false, error: 'Choose 1 to 3 genres.' };
+  }
+  const cleaned = [...new Set(genres.map(g => String(g).trim()).filter(Boolean))];
+  if (cleaned.length === 0 || cleaned.length > 3) {
+    return { valid: false, error: 'Choose 1 to 3 genres.' };
+  }
+  if (cleaned.some(g => !VALID_GENRES.includes(g))) {
+    return { valid: false, error: 'Please choose valid genres only.' };
+  }
+  return { valid: true, cleaned };
+}
+
 // ─── Rate limiting for votes (per IP) ───
 // A soft, supplementary layer on top of the signed cookie: blunts fast,
 // automated vote-spamming without hard-blocking normal use. In-memory,
@@ -268,16 +286,11 @@ app.post('/api/movies', async (req, res) => {
     if (cleanPitch.length > 300) {
       return res.status(400).json({ error: 'Pitch must be 300 characters or fewer.' });
     }
-    if (!Array.isArray(genres)) {
-      return res.status(400).json({ error: 'Choose 1 to 3 genres.' });
+    const genreCheck = validateGenres(genres);
+    if (!genreCheck.valid) {
+      return res.status(400).json({ error: genreCheck.error });
     }
-    const cleanGenres = [...new Set(genres.map(g => String(g).trim()).filter(Boolean))];
-    if (cleanGenres.length === 0 || cleanGenres.length > 3) {
-      return res.status(400).json({ error: 'Choose 1 to 3 genres.' });
-    }
-    if (cleanGenres.some(g => !VALID_GENRES.includes(g))) {
-      return res.status(400).json({ error: 'Please choose valid genres only.' });
-    }
+    const cleanGenres = genreCheck.cleaned;
 
     let posterUrl;
     if (poster && String(poster).trim()) {
@@ -422,28 +435,48 @@ app.get('*', (req, res) => {
 
 
 // ─── Start Server ───
-const server = app.listen(PORT, () => {
-  console.log(`Movie Recommendation Board running on port ${PORT}`);
-  console.log(`Frontend: http://localhost:${PORT}`);
-  console.log(`API:      http://localhost:${PORT}/api/movies`);
-});
-
-// ─── Graceful shutdown ───
-// When the Auto Scaling Group scales in, it sends SIGTERM before
-// killing an instance. Without handling it, in-flight requests get
-// dropped mid-response. This lets the server finish serving whatever
-// it's already working on (up to 10s) before actually exiting.
-function gracefulShutdown(signal) {
-  console.log(`${signal} received: closing server gracefully...`);
-  server.close(() => {
-    console.log('Server closed. Exiting process.');
-    process.exit(0);
+// Guarded so that requiring this file (e.g. from a test file) doesn't
+// bind a real port or register process signal handlers — only running
+// it directly (`node server.js`) does.
+if (require.main === module) {
+  const server = app.listen(PORT, () => {
+    console.log(`Movie Recommendation Board running on port ${PORT}`);
+    console.log(`Frontend: http://localhost:${PORT}`);
+    console.log(`API:      http://localhost:${PORT}/api/movies`);
   });
-  setTimeout(() => {
-    console.error('Forced shutdown after timeout — a connection did not close in time.');
-    process.exit(1);
-  }, 10000).unref();
+
+  // ─── Graceful shutdown ───
+  // When the Auto Scaling Group scales in, it sends SIGTERM before
+  // killing an instance. Without handling it, in-flight requests get
+  // dropped mid-response. This lets the server finish serving whatever
+  // it's already working on (up to 10s) before actually exiting.
+  const gracefulShutdown = (signal) => {
+    console.log(`${signal} received: closing server gracefully...`);
+    server.close(() => {
+      console.log('Server closed. Exiting process.');
+      process.exit(0);
+    });
+    setTimeout(() => {
+      console.error('Forced shutdown after timeout — a connection did not close in time.');
+      process.exit(1);
+    }, 10000).unref();
+  };
+
+  process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+  process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 }
 
-process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+// ─── Exports for testing ───
+// Exporting the pure/testable pieces (not the DynamoDB-backed route
+// handlers themselves) so unit tests can exercise the trickiest logic
+// — validation, cookie signing, rate limiting — without needing a
+// running server or real AWS credentials.
+module.exports = {
+  app,
+  isValidPosterUrl,
+  validateGenres,
+  signValue,
+  verifySignedValue,
+  checkVoteRateLimit,
+  toClientMovie
+};
