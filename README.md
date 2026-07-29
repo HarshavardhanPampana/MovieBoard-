@@ -13,12 +13,14 @@ MovieBoard/
 ├── backend/
 │   ├── server.js          # Express server (frontend + API)
 │   ├── package.json       # Dependencies
+│   ├── .env.example       # Template for required environment variables
 │   └── public/            # Static frontend files
 │       ├── index.html     # Feed page (browse + vote)
 │       ├── submit.html    # Submit recommendation page
 │       ├── style.css      # Styling
 │       ├── script.js      # Feed page JS
-│       └── submit.js      # Submit page JS
+│       ├── submit.js      # Submit page JS
+│       └── shared-config.js # Genre list + poster validation (shared by frontend and server)
 └── README.md
 ```
 
@@ -35,13 +37,37 @@ MovieBoard/
 sudo apt update && sudo apt install -y nodejs npm
 cd MovieBoard/backend
 npm install
-sudo npm install -g pm2
-sudo pm2 start server.js
-sudo pm2 startup
-sudo pm2 save
 ```
 
+Create a `.env` file (see `.env.example`) with real values before starting:
+```bash
+cp .env.example .env
+nano .env   # set PORT=3000, AWS_REGION, and a real random SESSION_SECRET
+```
+
+Generate a random `SESSION_SECRET`:
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+Start the app on an unprivileged port — **no `sudo` needed**, since the
+ALB target group (not the app itself) is what listens on port 80 for
+visitors:
+```bash
+npm install -g pm2
+pm2 start server.js --name movieboard
+pm2 startup
+pm2 save
+```
+
+**ALB target group:** point it at port `3000` (or whatever `PORT` is
+set to) on each instance, with the health check path set to `/health`
+instead of `/` — that endpoint actually verifies DynamoDB connectivity,
+not just that the Node process is alive.
+
 ## API Endpoints
-- GET  /api/movies         — Fetch all movies (?genre=&sort=top|new)
-- POST /api/movies         — Submit a new recommendation
-- PUT  /api/movies/:id/vote — Upvote or downvote
+- GET    /api/movies          — Fetch all movies (?genre=&sort=top|new); search is client-side only
+- POST   /api/movies          — Submit a new recommendation
+- PUT    /api/movies/:id/vote — Upvote or downvote
+- DELETE /api/movies/:id      — Delete your own recommendation
+- GET    /health              — DynamoDB connectivity check (for the ALB target group)

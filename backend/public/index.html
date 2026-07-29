@@ -39,6 +39,7 @@
         </div>
       </a>
       <div class="nav-actions">
+        <button class="search-toggle-btn" id="search-toggle-btn" type="button" aria-label="Toggle search" aria-expanded="false">🔍</button>
         <div class="search-bar" id="search-bar">
           <span class="search-icon">🔍</span>
           <input type="text" id="search-input" placeholder="Search movies..." autocomplete="off">
@@ -80,15 +81,6 @@
   <!-- Genre Chips (scrollable) -->
   <div class="genre-strip">
     <button class="genre-chip active" data-genre="All">🎬 All</button>
-    <button class="genre-chip" data-genre="Action">💥 Action</button>
-    <button class="genre-chip" data-genre="Comedy">😂 Comedy</button>
-    <button class="genre-chip" data-genre="Drama">🎭 Drama</button>
-    <button class="genre-chip" data-genre="Horror">👻 Horror</button>
-    <button class="genre-chip" data-genre="Sci-Fi">🚀 Sci-Fi</button>
-    <button class="genre-chip" data-genre="Thriller">🔪 Thriller</button>
-    <button class="genre-chip" data-genre="Romance">💕 Romance</button>
-    <button class="genre-chip" data-genre="Documentary">📽️ Documentary</button>
-    <button class="genre-chip" data-genre="Animation">🎨 Animation</button>
   </div>
 
   <!-- Sort Bar -->
@@ -129,12 +121,16 @@
   <!-- Movie Cards -->
   <div id="movies-container" class="card-grid"></div>
 
+  <!-- Pagination -->
+  <div id="pagination-controls" class="pagination"></div>
+
   <!-- Toast -->
   <div id="toast" class="toast"><span id="toast-icon"></span><span id="toast-msg"></span></div>
 
   <!-- Confetti -->
   <canvas id="confetti-canvas"></canvas>
 
+  <script src="shared-config.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

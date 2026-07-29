@@ -1,9 +1,14 @@
 // ============================================================
 // MOVIEBOARD — Submit Page (Cinematic)
-// Genre picker, live preview, confetti on success, countdown
+// Genre picker, poster field, live preview, confetti on success
 // ============================================================
 
 const API = '/api/movies';
+// Sourced from shared-config.js (loaded before this script) so
+// validation can never drift out of sync with the server.
+const POSTER_PATTERN = MOVIEBOARD_POSTER_PATTERN;
+const POSTER_MAX_LENGTH = MOVIEBOARD_POSTER_MAX_LENGTH;
+
 const form = document.getElementById('submit-form');
 const $btn = document.getElementById('submit-btn');
 const $btnText = document.getElementById('btn-text');
@@ -12,19 +17,26 @@ const $msg = document.getElementById('form-message');
 const $overlay = document.getElementById('success-overlay');
 
 const $title = document.getElementById('title');
-const $genre = document.getElementById('genre');
 const $pitch = document.getElementById('pitch');
+const $poster = document.getElementById('poster');
 
 const $titleErr = document.getElementById('title-error');
 const $genreErr = document.getElementById('genre-error');
 const $pitchErr = document.getElementById('pitch-error');
+const $posterErr = document.getElementById('poster-error');
 const $titleCnt = document.getElementById('title-count');
 const $pitchCnt = document.getElementById('pitch-count');
+const $genreCnt = document.getElementById('genre-count');
+
+const MAX_GENRES = 3;
+let selectedGenres = [];
 
 const $preview = document.getElementById('preview-wrap');
 const $pTitle = document.getElementById('preview-title');
 const $pGenre = document.getElementById('preview-genre');
 const $pPitch = document.getElementById('preview-pitch');
+const $pPosterWrap = document.getElementById('preview-poster');
+const $pPosterImg = document.getElementById('preview-poster-img');
 
 // ─── Stars ───
 function createStars() {
@@ -78,13 +90,43 @@ function bigConfetti() {
   })();
 }
 
-// ─── Genre Picker ───
+// ─── Build genre picker buttons from shared config ───
+(function initGenrePicker() {
+  const container = document.getElementById('genre-picker');
+  if (!container || typeof MOVIEBOARD_GENRES === 'undefined') return;
+  MOVIEBOARD_GENRES.forEach(g => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'gpick';
+    btn.dataset.value = g;
+    btn.textContent = `${MOVIEBOARD_GENRE_EMOJI[g] || ''} ${g}`.trim();
+    container.appendChild(btn);
+  });
+})();
+
+// ─── Genre Picker (multi-select, max 3) ───
+function updateGenreLockState() {
+  const atMax = selectedGenres.length >= MAX_GENRES;
+  document.querySelectorAll('.gpick').forEach(btn => {
+    if (!btn.classList.contains('selected')) btn.disabled = atMax;
+  });
+  if ($genreCnt) $genreCnt.textContent = `${selectedGenres.length}/${MAX_GENRES} selected`;
+}
+
 document.querySelectorAll('.gpick').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.gpick').forEach(b => b.classList.remove('selected'));
-    btn.classList.add('selected');
-    $genre.value = btn.dataset.value;
+    const val = btn.dataset.value;
+    const idx = selectedGenres.indexOf(val);
+    if (idx > -1) {
+      selectedGenres.splice(idx, 1);
+      btn.classList.remove('selected');
+    } else {
+      if (selectedGenres.length >= MAX_GENRES) return;
+      selectedGenres.push(val);
+      btn.classList.add('selected');
+    }
     $genreErr.textContent = '';
+    updateGenreLockState();
     updatePreview();
   });
 });
@@ -106,37 +148,64 @@ $pitch.addEventListener('input', () => {
   updatePreview();
 });
 
+// ─── Poster field ───
+if ($poster) {
+  $poster.addEventListener('input', () => {
+    $posterErr.textContent = '';
+    updatePreview();
+  });
+}
+
 // ─── Live Preview ───
 function updatePreview() {
   const t = $title.value.trim();
-  const g = $genre.value;
   const p = $pitch.value.trim();
-  if (t || g || p) {
+  const posterUrl = $poster ? $poster.value.trim() : '';
+
+  if (t || selectedGenres.length || p) {
     $preview.style.display = 'block';
     $pTitle.textContent = t || 'Title';
     $pPitch.textContent = p || 'Pitch';
-    if (g) {
-      $pGenre.textContent = g;
-      $pGenre.className = `genre-badge genre-${g}`;
-      $pGenre.style.display = 'inline-block';
-    } else { $pGenre.style.display = 'none'; }
+    $pGenre.innerHTML = '';
+    selectedGenres.forEach(g => {
+      const span = document.createElement('span');
+      span.className = `genre-badge genre-${g}`;
+      span.textContent = g;
+      $pGenre.appendChild(span);
+    });
   } else { $preview.style.display = 'none'; }
+
+  if ($pPosterWrap && $pPosterImg) {
+    if (posterUrl && POSTER_PATTERN.test(posterUrl)) {
+      $pPosterImg.src = posterUrl;
+      $pPosterImg.onerror = () => { $pPosterWrap.style.display = 'none'; };
+      $pPosterImg.onload = () => { $pPosterWrap.style.display = 'block'; };
+    } else {
+      $pPosterWrap.style.display = 'none';
+    }
+  }
 }
 
 // ─── Submit ───
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   $titleErr.textContent = $genreErr.textContent = $pitchErr.textContent = '';
+  if ($posterErr) $posterErr.textContent = '';
 
   const title = $title.value.trim();
-  const genre = $genre.value;
   const pitch = $pitch.value.trim();
+  const posterUrl = $poster ? $poster.value.trim() : '';
   let ok = true;
 
   if (!title) { $titleErr.textContent = 'Enter a title'; ok = false; }
-  if (!genre) { $genreErr.textContent = 'Pick a genre'; ok = false; }
+  if (selectedGenres.length === 0) { $genreErr.textContent = 'Pick at least 1 genre'; ok = false; }
+  else if (selectedGenres.length > 3) { $genreErr.textContent = 'Pick up to 3 genres only'; ok = false; }
   if (!pitch) { $pitchErr.textContent = 'Write a pitch'; ok = false; }
   else if (pitch.length < 10) { $pitchErr.textContent = 'At least 10 characters'; ok = false; }
+  if (posterUrl && (posterUrl.length > POSTER_MAX_LENGTH || !POSTER_PATTERN.test(posterUrl))) {
+    if ($posterErr) $posterErr.textContent = 'Must be a valid link starting with http:// or https://';
+    ok = false;
+  }
   if (!ok) return;
 
   $btn.disabled = true;
@@ -145,13 +214,24 @@ form.addEventListener('submit', async (e) => {
   $msg.className = 'form-message';
   $msg.textContent = '';
 
+  const payload = { title, genres: selectedGenres, pitch };
+  if (posterUrl) payload.poster = posterUrl;
+
   try {
     const res = await fetch(API, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, genre, pitch })
+      body: JSON.stringify(payload)
     });
-    if (!res.ok) throw new Error();
+
+    if (!res.ok) {
+      let message = 'Something went wrong. Try again.';
+      try {
+        const data = await res.json();
+        if (data && data.error) message = data.error;
+      } catch {}
+      throw new Error(message);
+    }
 
     $overlay.style.display = 'flex';
     bigConfetti();
@@ -164,9 +244,9 @@ form.addEventListener('submit', async (e) => {
       if (sec <= 0) { clearInterval(timer); window.location.href = 'index.html'; }
     }, 1000);
 
-  } catch {
+  } catch (err) {
     $msg.className = 'form-message error';
-    $msg.textContent = 'Something went wrong. Try again.';
+    $msg.textContent = (err && err.message) || 'Something went wrong. Try again.';
     $btn.disabled = false;
     $btnText.style.display = 'inline';
     $btnLoader.style.display = 'none';

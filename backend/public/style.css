@@ -156,6 +156,22 @@ a { text-decoration: none; color: inherit; }
 }
 .search-bar input::placeholder { color: var(--dim); }
 
+.search-toggle-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 16px;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.search-toggle-btn:hover { border-color: var(--neon-purple); background: rgba(168,85,247,0.08); }
+
 /* ─── NEON BUTTON ─── */
 .btn-neon {
   position: relative;
@@ -399,7 +415,40 @@ a { text-decoration: none; color: inherit; }
   100% { background-position: 200% 0%; }
 }
 
-.card-body { padding: 22px 24px; }
+/* Poster thumbnail */
+.card-poster-wrap {
+  width: 100%;
+  height: 160px;
+  background: rgba(255,255,255,0.03);
+  overflow: hidden;
+  position: relative;
+}
+.card-poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.card-poster-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  color: var(--dim);
+  background: linear-gradient(135deg, rgba(168,85,247,0.06), rgba(236,72,153,0.06));
+}
+
+.card-body { padding: 22px 24px; position: relative; }
+
+.card-genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.card-genres .genre-badge { margin-bottom: 0; }
 
 /* Rank number */
 .card-rank {
@@ -413,6 +462,25 @@ a { text-decoration: none; color: inherit; }
   line-height: 1;
   pointer-events: none;
 }
+
+/* Delete button (only shown to the original submitter) */
+.delete-btn {
+  position: absolute;
+  top: 16px;
+  left: 24px;
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.25);
+  border-radius: 8px;
+  color: #f87171;
+  font-size: 13px;
+  line-height: 1;
+  padding: 6px 9px;
+  cursor: pointer;
+  transition: all 0.3s;
+  z-index: 1;
+}
+.delete-btn:hover { background: rgba(239,68,68,0.2); transform: translateY(-1px); }
+.delete-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 /* Genre badges */
 .genre-badge {
@@ -447,7 +515,15 @@ a { text-decoration: none; color: inherit; }
   font-size: 14px;
   color: var(--muted);
   line-height: 1.7;
-  margin-bottom: 18px;
+  margin-bottom: 10px;
+}
+
+.card-time {
+  display: block;
+  font-size: 11px;
+  color: var(--dim);
+  font-family: 'Space Grotesk', monospace;
+  margin-bottom: 8px;
 }
 
 /* ─── VOTE SECTION ─── */
@@ -459,6 +535,8 @@ a { text-decoration: none; color: inherit; }
   background: rgba(255,255,255,0.02);
   border-top: 1px solid var(--border);
 }
+
+.card-footer.already-voted { opacity: 0.9; }
 
 .vote-btn {
   position: relative;
@@ -495,6 +573,7 @@ a { text-decoration: none; color: inherit; }
 .vote-btn.downvote:hover .vote-arrow { transform: translateY(3px) scale(1.3); }
 
 .vote-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.vote-btn:disabled:hover { transform: none; box-shadow: none; }
 
 .vote-btn .ripple {
   position: absolute; border-radius: 50%;
@@ -561,6 +640,31 @@ a { text-decoration: none; color: inherit; }
 }
 .empty-state h2, .error-state h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
 .empty-state p, .error-state p { color: var(--muted); margin-bottom: 24px; }
+
+/* ─── PAGINATION ─── */
+.pagination {
+  position: relative; z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 0 28px 60px;
+}
+.page-btn {
+  padding: 8px 18px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.page-btn:hover:not(:disabled) { border-color: var(--neon-purple); background: rgba(168,85,247,0.08); }
+.page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.page-indicator { font-size: 13px; color: var(--muted); font-weight: 500; font-family: 'Space Grotesk', monospace; }
 
 /* ─── TOAST ─── */
 .toast {
@@ -631,12 +735,14 @@ a { text-decoration: none; color: inherit; }
 form { padding: 28px 32px 32px; }
 
 .field { margin-bottom: 22px; position: relative; }
-.field label {
+.field label,
+.field-label-text {
   display: block;
   font-size: 13px; font-weight: 700;
   color: var(--text);
   margin-bottom: 8px;
 }
+.optional-tag { color: var(--dim); font-weight: 400; }
 
 .field input, .field textarea {
   width: 100%;
@@ -700,6 +806,7 @@ form { padding: 28px 32px 32px; }
   color: #fff;
   box-shadow: 0 0 15px rgba(168,85,247,0.3);
 }
+.gpick:disabled { opacity: 0.35; cursor: not-allowed; }
 
 /* Preview */
 .preview-wrap { margin-bottom: 24px; animation: fadeUp 0.3s ease; }
@@ -709,7 +816,21 @@ form { padding: 28px 32px 32px; }
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 18px;
+  overflow: hidden;
 }
+.preview-poster {
+  margin: -18px -18px 14px;
+  height: 140px;
+  overflow: hidden;
+}
+.preview-poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.preview-genres { display: flex; flex-wrap: wrap; gap: 6px; }
+.preview-genres .genre-badge { margin-bottom: 0; }
 .preview-title { font-size: 16px; font-weight: 700; margin: 8px 0 4px; }
 .preview-pitch { font-size: 13px; color: var(--muted); line-height: 1.5; }
 .preview-footer { display: flex; gap: 16px; margin-top: 10px; font-size: 12px; color: var(--dim); font-family: 'Space Grotesk', monospace; }
@@ -780,13 +901,30 @@ form { padding: 28px 32px 32px; }
 /* ─── RESPONSIVE ─── */
 @media (max-width: 768px) {
   .nav-inner { padding: 10px 16px; }
+  .search-toggle-btn { display: inline-flex; }
   .search-bar { display: none; }
+  .search-bar.mobile-open {
+    display: flex;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: 12px 16px;
+    background: rgba(6, 6, 14, 0.95);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-bottom: 1px solid var(--border);
+    border-radius: 0;
+  }
+  .search-bar.mobile-open input { flex: 1; width: auto; }
   .hero { padding: 40px 16px 16px; }
   .hero-stats { flex-direction: column; gap: 12px; }
   .stat-divider { width: 60px; height: 1px; }
   .genre-strip { padding: 12px 16px; }
   .card-grid { grid-template-columns: 1fr; padding: 0 16px 40px; }
   .sort-bar { padding: 8px 16px; }
+  .pagination { padding: 0 16px 40px; }
   form { padding: 24px 20px 28px; }
   .ticket-header { padding: 20px; }
 }

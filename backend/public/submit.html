@@ -60,20 +60,12 @@
         </div>
 
         <div class="field">
-          <label for="genre">🏷️ Genre</label>
-          <div class="genre-picker" id="genre-picker">
-            <button type="button" class="gpick" data-value="Action">💥 Action</button>
-            <button type="button" class="gpick" data-value="Comedy">😂 Comedy</button>
-            <button type="button" class="gpick" data-value="Drama">🎭 Drama</button>
-            <button type="button" class="gpick" data-value="Horror">👻 Horror</button>
-            <button type="button" class="gpick" data-value="Sci-Fi">🚀 Sci-Fi</button>
-            <button type="button" class="gpick" data-value="Thriller">🔪 Thriller</button>
-            <button type="button" class="gpick" data-value="Romance">💕 Romance</button>
-            <button type="button" class="gpick" data-value="Documentary">📽️ Doc</button>
-            <button type="button" class="gpick" data-value="Animation">🎨 Animation</button>
+          <span class="field-label-text" id="genre-picker-label">🏷️ Genres <span class="optional-tag">(pick 1–3)</span></span>
+          <div class="genre-picker" id="genre-picker" role="group" aria-labelledby="genre-picker-label"></div>
+          <div class="field-meta">
+            <span class="error-msg" id="genre-error"></span>
+            <span class="char-count" id="genre-count">0/3 selected</span>
           </div>
-          <input type="hidden" id="genre" required>
-          <span class="error-msg" id="genre-error"></span>
         </div>
 
         <div class="field">
@@ -86,11 +78,23 @@
           </div>
         </div>
 
+        <div class="field">
+          <label for="poster">🖼️ Poster Image URL <span class="optional-tag">(optional)</span></label>
+          <input type="url" id="poster" placeholder="https://example.com/poster.jpg" autocomplete="off">
+          <div class="field-line"></div>
+          <div class="field-meta">
+            <span class="error-msg" id="poster-error"></span>
+          </div>
+        </div>
+
         <!-- Live Preview -->
         <div class="preview-wrap" id="preview-wrap" style="display:none;">
           <div class="preview-label">👁️ Preview</div>
           <div class="preview-card">
-            <span class="genre-badge" id="preview-genre"></span>
+            <div class="preview-poster" id="preview-poster" style="display:none;">
+              <img id="preview-poster-img" alt="Poster preview">
+            </div>
+            <div class="preview-genres" id="preview-genre"></div>
             <div class="preview-title" id="preview-title">Title</div>
             <div class="preview-pitch" id="preview-pitch">Pitch</div>
             <div class="preview-footer">
@@ -123,6 +127,7 @@
 
   <canvas id="confetti-canvas"></canvas>
 
+  <script src="shared-config.js"></script>
   <script src="submit.js"></script>
 </body>
 </html>
