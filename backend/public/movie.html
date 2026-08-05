@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loading... — MovieBoard</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="movie-detail.css">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Cinematic Background -->
+  <div class="cinema-bg">
+    <div class="spotlight spotlight-1"></div>
+    <div class="spotlight spotlight-2"></div>
+    <div class="film-grain"></div>
+    <div class="stars" id="stars"></div>
+  </div>
+
+  <!-- Backdrop (blurred poster) -->
+  <div class="detail-backdrop" id="backdrop"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">
+        <div class="brand-logo">M</div>
+        <div class="brand-name">
+          <span class="brand-main">MovieBoard</span>
+          <span class="brand-tag">community picks</span>
+        </div>
+      </a>
+      <a href="index.html" class="btn-glass">← Back to Feed</a>
+    </div>
+  </nav>
+
+  <!-- Loading State -->
+  <div id="loading-state" class="detail-loading">
+    <div class="spinner-lg"></div>
+    <p>Loading movie...</p>
+  </div>
+
+  <!-- Error State -->
+  <div id="error-state" class="detail-error" style="display:none;">
+    <div class="empty-visual">😕</div>
+    <h2>Movie not found</h2>
+    <p>This movie doesn't exist or was removed</p>
+    <a href="index.html" class="btn-neon"><span class="btn-neon-text">Back to Feed</span><span class="btn-neon-glow"></span></a>
+  </div>
+
+  <!-- Movie Detail -->
+  <div id="movie-detail" class="detail-wrapper" style="display:none;">
+    
+    <!-- Hero Section -->
+    <div class="detail-hero">
+      <div class="detail-poster-wrap">
+        <img id="detail-poster" class="detail-poster" src="" alt="">
+        <div class="poster-glow" id="poster-glow"></div>
+      </div>
+      
+      <div class="detail-info">
+        <div class="detail-genres" id="detail-genres"></div>
+        <h1 class="detail-title" id="detail-title"></h1>
+        
+        <div class="detail-meta">
+          <span class="detail-time" id="detail-time"></span>
+          <span class="detail-separator">•</span>
+          <span class="detail-owner" id="detail-owner"></span>
+        </div>
+
+        <p class="detail-pitch" id="detail-pitch"></p>
+
+        <!-- Vote Section -->
+        <div class="detail-vote-section">
+          <button class="detail-vote-btn upvote" id="vote-up">
+            <span class="vote-icon">👍</span>
+            <span class="vote-label">Upvote</span>
+            <span class="vote-num" id="vote-up-count">0</span>
+          </button>
+          <button class="detail-vote-btn downvote" id="vote-down">
+            <span class="vote-icon">👎</span>
+            <span class="vote-label">Downvote</span>
+            <span class="vote-num" id="vote-down-count">0</span>
+          </button>
+          <div class="detail-net" id="detail-net">
+            <span class="net-label">Score</span>
+            <span class="net-num" id="net-score">0</span>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="detail-actions">
+          <a href="index.html" class="action-btn">
+            <span class="action-icon">🏠</span>
+            <span>Browse More</span>
+          </a>
+          <a href="submit.html" class="action-btn">
+            <span class="action-icon">➕</span>
+            <span>Recommend</span>
+          </a>
+          <button class="action-btn" id="share-btn">
+            <span class="action-icon">🔗</span>
+            <span>Share</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="detail-stats">
+      <div class="stat-card">
+        <span class="stat-icon">👍</span>
+        <span class="stat-value" id="stat-upvotes">0</span>
+        <span class="stat-name">Upvotes</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">👎</span>
+        <span class="stat-value" id="stat-downvotes">0</span>
+        <span class="stat-name">Downvotes</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">⭐</span>
+        <span class="stat-value" id="stat-score">0</span>
+        <span class="stat-name">Net Score</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">📅</span>
+        <span class="stat-value" id="stat-date">—</span>
+        <span class="stat-name">Added</span>
+      </div>
+    </div>
+
+    <!-- Similar Movies -->
+    <div class="similar-section" id="similar-section" style="display:none;">
+      <h2 class="similar-title">🎬 You might also like</h2>
+      <div class="similar-grid" id="similar-grid"></div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"><span id="toast-icon"></span><span id="toast-msg"></span></div>
+
+  <!-- Confetti -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <script src="shared-config.js"></script>
+  <script src="movie-detail.js"></script>
+</body>
+</html>
