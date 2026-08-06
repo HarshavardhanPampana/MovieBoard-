@@ -1,12 +1,12 @@
 // ============================================================
 // Unit tests for the pure/testable logic in server.js.
 // Run with: npm test  (or directly: node --test)
-// Uses Node's built-in test runner — no extra dependencies needed.
+// Uses Node's built-in test runner - no extra dependencies needed.
 //
 // Deliberately does NOT test the DynamoDB-backed route handlers
 // end-to-end (that would need a real or mocked table and a library
 // like supertest). This covers the validation and security logic
-// that's easiest to get subtly wrong and hardest to catch by eye —
+// that's easiest to get subtly wrong and hardest to catch by eye -
 // exactly the kind of things that were actually broken before this
 // review (the poster regex, the forgeable cookie).
 // ============================================================
@@ -14,7 +14,7 @@
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 
-// Requiring server.js does NOT start the server or bind a port —
+// Requiring server.js does NOT start the server or bind a port -
 // app.listen() only runs when server.js is executed directly
 // (require.main === module), not when it's require()'d from here.
 const {

@@ -1,5 +1,5 @@
 // ============================================================
-// MOVIEBOARD — Submit Page (Cinematic)
+// MOVIEBOARD - Submit Page (Cinematic)
 // Genre picker, poster field, live preview, confetti on success
 // ============================================================
 

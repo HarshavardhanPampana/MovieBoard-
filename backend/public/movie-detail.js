@@ -1,5 +1,5 @@
 // ============================================================
-// Movie Detail Page — Netflix-Style
+// Movie Detail Page - Netflix-Style
 // ============================================================
 
 const API = '/api/movies';
@@ -122,7 +122,7 @@ function renderMovie(m) {
   document.getElementById('movie-detail').style.display = 'block';
 
   // Title
-  document.title = `${m.title} — MovieBoard`;
+  document.title = `${m.title} - MovieBoard`;
   document.getElementById('detail-title').textContent = m.title;
 
   // Poster
@@ -220,7 +220,7 @@ async function handleVote(type, ev) {
     }
     if (res.status === 429) {
       const data = await res.json().catch(() => ({}));
-      toast('⏳', data.error || 'Slow down — too many votes', 'error');
+      toast('⏳', data.error || 'Slow down - too many votes', 'error');
       return;
     }
     if (!res.ok) throw new Error();

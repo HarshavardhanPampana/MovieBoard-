@@ -52,7 +52,7 @@ Generate a random `SESSION_SECRET`:
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
-Start the app on an unprivileged port — **no `sudo` needed**, since the
+Start the app on an unprivileged port - **no `sudo` needed**, since the
 ALB target group (not the app itself) is what listens on port 80 for
 visitors:
 ```bash
@@ -64,7 +64,7 @@ pm2 save
 
 **ALB target group:** point it at port `3000` (or whatever `PORT` is
 set to) on each instance, with the health check path set to `/health`
-instead of `/` — that endpoint actually verifies DynamoDB connectivity,
+instead of `/` - that endpoint actually verifies DynamoDB connectivity,
 not just that the Node process is alive.
 
 ## Tests
@@ -72,13 +72,13 @@ not just that the Node process is alive.
 npm test
 ```
 Runs unit tests (`test/server.test.js`) with Node's built-in test
-runner — no extra dependencies required. Covers poster URL validation,
+runner - no extra dependencies required. Covers poster URL validation,
 genre validation, cookie signing/verification, the vote rate limiter,
 and the client-facing movie data transform. Requires Node 18+.
 
 ## API Endpoints
-- GET    /api/movies          — Fetch all movies (?genre=&sort=top|new); search is client-side only
-- POST   /api/movies          — Submit a new recommendation
-- PUT    /api/movies/:id/vote — Upvote or downvote
-- DELETE /api/movies/:id      — Delete your own recommendation
-- GET    /health              — DynamoDB connectivity check (for the ALB target group)
+- GET    /api/movies          - Fetch all movies (?genre=&sort=top|new); search is client-side only
+- POST   /api/movies          - Submit a new recommendation
+- PUT    /api/movies/:id/vote - Upvote or downvote
+- DELETE /api/movies/:id      - Delete your own recommendation
+- GET    /health              - DynamoDB connectivity check (for the ALB target group)

@@ -1,5 +1,5 @@
 // ============================================================
-// Shared config — the single source of truth for genre names/emoji
+// Shared config - the single source of truth for genre names/emoji
 // and poster URL validation rules.
 //
 // Loaded two ways with zero build tooling:
@@ -26,7 +26,7 @@ const MOVIEBOARD_GENRE_EMOJI = {
 };
 
 // Any well-formed http(s) URL, no quotes/angle-brackets/whitespace.
-// Deliberately no file-extension requirement — many legitimate image
+// Deliberately no file-extension requirement - many legitimate image
 // hosts serve extensionless URLs, and an extension proves nothing
 // about the actual response anyway. See server.js POST handler for
 // the full reasoning; the frontend's onerror fallback handles any

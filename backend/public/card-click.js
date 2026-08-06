@@ -1,5 +1,5 @@
 // ============================================================
-// Card Click — Navigate to movie detail page
+// Card Click - Navigate to movie detail page
 // Loaded on the feed page (index.html)
 // ============================================================
 document.addEventListener('click', (e) => {

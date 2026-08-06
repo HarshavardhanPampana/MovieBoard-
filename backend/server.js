@@ -1,5 +1,5 @@
 // ============================================================
-// Movie Recommendation Board — Express Server
+// Movie Recommendation Board - Express Server
 // Serves static frontend + REST API
 // Connects to DynamoDB (Movies table) via AWS SDK
 // ============================================================
@@ -25,7 +25,7 @@ app.set('trust proxy', 1);
 // API are served from the same Express app, so same-origin requests
 // never need CORS at all. Leaving CORS wide open would only ever serve
 // to let *other* websites call the vote/delete/submit endpoints from
-// their own JS — there's no current use case for that. If a separate
+// their own JS - there's no current use case for that. If a separate
 // admin dashboard or mobile client on another domain ever needs to
 // call this API, add a scoped cors({ origin: '<trusted domain>' })
 // then, rather than leaving it open by default now.
@@ -41,19 +41,19 @@ const docClient = new AWS.DynamoDB.DocumentClient();
 const TABLE_NAME = 'Movies';
 
 // ─── Anonymous client identity (signed cookie) ───
-// No login system — each browser gets a random ID stored in an httpOnly
+// No login system - each browser gets a random ID stored in an httpOnly
 // cookie. The ID is HMAC-signed with a server-only secret so a visitor
 // can't edit the cookie value to impersonate someone else's ID (which
 // would otherwise let them delete another person's post or appear to
 // have voted when they haven't). Clearing cookies still resets a
-// visitor to a fresh anonymous ID — that's an accepted limitation of
+// visitor to a fresh anonymous ID - that's an accepted limitation of
 // any identity system that doesn't require creating an account.
 const CLIENT_COOKIE = 'mb_client_id';
 const CLIENT_COOKIE_MAX_AGE = 1000 * 60 * 60 * 24 * 365; // 1 year
 
 const SESSION_SECRET = process.env.SESSION_SECRET || 'movieboard-dev-secret-change-in-production';
 if (!process.env.SESSION_SECRET) {
-  console.warn('WARNING: SESSION_SECRET is not set — using an insecure default. Set SESSION_SECRET as an environment variable in production.');
+  console.warn('WARNING: SESSION_SECRET is not set - using an insecure default. Set SESSION_SECRET as an environment variable in production.');
 }
 
 function signValue(value) {
@@ -113,7 +113,7 @@ function getOrCreateClientId(req, res) {
 function toClientMovie(item, clientId) {
   const votersArr = (item.voters && item.voters.values) ? item.voters.values : [];
   const { voters, submitterId, genre, genres, ...rest } = item;
-  // Older items only have a single "genre" string — wrap it into an array
+  // Older items only have a single "genre" string - wrap it into an array
   // so the frontend can treat every movie the same way.
   const genreList = Array.isArray(genres) && genres.length ? genres : (genre ? [genre] : []);
   return {
@@ -155,7 +155,7 @@ function validateGenres(genres) {
 // ─── Rate limiting for votes (per IP) ───
 // A soft, supplementary layer on top of the signed cookie: blunts fast,
 // automated vote-spamming without hard-blocking normal use. In-memory,
-// so it resets on server restart and is tracked per-instance — with
+// so it resets on server restart and is tracked per-instance - with
 // more than one EC2 instance behind the ALB, a determined user could
 // roughly double their effective limit by landing on both. A shared
 // store (e.g. DynamoDB or Redis) would close that gap if it ever
@@ -186,7 +186,7 @@ setInterval(() => {
 
 // ─── Fetching all movies ───
 // DynamoDB's Scan returns at most ~1MB per call and signals more data
-// via LastEvaluatedKey — without following it, items past that first
+// via LastEvaluatedKey - without following it, items past that first
 // page would silently disappear once the table grows. scanAllMovies()
 // loops until the whole table has been read, regardless of size.
 async function scanAllMovies() {
@@ -205,7 +205,7 @@ async function scanAllMovies() {
 // A short-lived cache of the raw (pre-per-client-processing) movie
 // list, shared across all visitors. Cuts down repeated full scans when
 // several people are browsing at once. Cleared immediately on any
-// write so changes always show up right away — the TTL below is only
+// write so changes always show up right away - the TTL below is only
 // a ceiling for how stale a read can be between writes, not how fresh
 // writes appear.
 const MOVIES_CACHE_TTL_MS = 8000; // 8 seconds
@@ -229,11 +229,11 @@ function invalidateMoviesCache() {
 // ============================================================
 // GET /api/movies
 // Retrieves all movies. Supports optional query params:
-//   ?genre=Action        — filter by genre
-//   ?sort=top            — sort by (upvotes - downvotes) descending
-//   ?sort=new            — sort by createdAt descending (default)
+//   ?genre=Action        - filter by genre
+//   ?sort=top            - sort by (upvotes - downvotes) descending
+//   ?sort=new            - sort by createdAt descending (default)
 // Search is handled entirely client-side (script.js) since the full
-// filtered/sorted list is already sent to the browser in one request —
+// filtered/sorted list is already sent to the browser in one request -
 // a server-side search param would only add a network round-trip for
 // data the client already has.
 // ============================================================
@@ -327,7 +327,7 @@ app.post('/api/movies', async (req, res) => {
 
 // ============================================================
 // PUT /api/movies/:id/vote
-// Upvote or downvote a movie. One vote per browser per movie —
+// Upvote or downvote a movie. One vote per browser per movie -
 // enforced server-side via a "voters" String Set on the item, so it
 // can't be bypassed by clearing localStorage or reloading the page.
 // Request body: { "vote": "up" } or { "vote": "down" }
@@ -342,7 +342,7 @@ app.put('/api/movies/:id/vote', async (req, res) => {
     }
 
     if (!checkVoteRateLimit(req.ip)) {
-      return res.status(429).json({ error: 'Too many votes too quickly — please slow down and try again in a minute.' });
+      return res.status(429).json({ error: 'Too many votes too quickly - please slow down and try again in a minute.' });
     }
 
     const clientId = getOrCreateClientId(req, res);
@@ -379,7 +379,7 @@ app.put('/api/movies/:id/vote', async (req, res) => {
 
 // ============================================================
 // DELETE /api/movies/:id
-// Deletes a movie recommendation — only allowed for the browser
+// Deletes a movie recommendation - only allowed for the browser
 // (cookie identity) that originally submitted it.
 // ============================================================
 app.delete('/api/movies/:id', async (req, res) => {
@@ -412,7 +412,7 @@ app.delete('/api/movies/:id', async (req, res) => {
 // GET /health
 // Liveness/readiness check for the ALB target group. Actually
 // verifies DynamoDB is reachable (not just "the Node process didn't
-// crash") — a broken IAM role, wrong region, or deleted table would
+// crash") - a broken IAM role, wrong region, or deleted table would
 // otherwise go undetected while the ALB keeps routing real traffic
 // to an instance that can't actually serve requests. Uses a Limit:1
 // scan so the check itself stays cheap.
@@ -436,7 +436,7 @@ app.get('*', (req, res) => {
 
 // ─── Start Server ───
 // Guarded so that requiring this file (e.g. from a test file) doesn't
-// bind a real port or register process signal handlers — only running
+// bind a real port or register process signal handlers - only running
 // it directly (`node server.js`) does.
 if (require.main === module) {
   const server = app.listen(PORT, () => {
@@ -457,7 +457,7 @@ if (require.main === module) {
       process.exit(0);
     });
     setTimeout(() => {
-      console.error('Forced shutdown after timeout — a connection did not close in time.');
+      console.error('Forced shutdown after timeout - a connection did not close in time.');
       process.exit(1);
     }, 10000).unref();
   };
@@ -469,7 +469,7 @@ if (require.main === module) {
 // ─── Exports for testing ───
 // Exporting the pure/testable pieces (not the DynamoDB-backed route
 // handlers themselves) so unit tests can exercise the trickiest logic
-// — validation, cookie signing, rate limiting — without needing a
+// - validation, cookie signing, rate limiting - without needing a
 // running server or real AWS credentials.
 module.exports = {
   app,

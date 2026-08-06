@@ -1,5 +1,5 @@
 // ============================================================
-// MOVIEBOARD — Cinematic Feed Page
+// MOVIEBOARD - Cinematic Feed Page
 // Stars, confetti, ripple, animated counters, search, pagination
 // ============================================================
 
@@ -317,7 +317,7 @@ async function vote(id, type, btn, ev) {
     }
     if (res.status === 429) {
       const data = await res.json().catch(() => ({}));
-      toast('⏳', data.error || 'Slow down — too many votes', 'error');
+      toast('⏳', data.error || 'Slow down - too many votes', 'error');
       buttons.forEach(b => b.disabled = false);
       return;
     }
