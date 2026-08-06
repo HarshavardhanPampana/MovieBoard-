@@ -466,7 +466,7 @@ a { text-decoration: none; color: inherit; }
 /* Delete button (only shown to the original submitter) */
 .delete-btn {
   position: absolute;
-  top: 22px;
+  top: 64px;
   right: 24px;
   background: rgba(239,68,68,0.1);
   border: 1px solid rgba(239,68,68,0.25);
